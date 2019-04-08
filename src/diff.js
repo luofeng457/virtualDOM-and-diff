@@ -14,29 +14,38 @@ function walk(oldNode, newNode, index, patches) {
 	// 每个元素都有一个补丁
 	let current = [];
 
+	console.log('index: ', index + '->' + JSON.stringify(oldNode) + '->' + JSON.stringify(newNode))
+
 	if (!newNode) {
-		// 节点被删除
+		// 节点被删除 
+		console.debug('walk !newNode: ', oldNode);
 		current.push({type: 'REMOVE', index});
 	} else if (isString(oldNode) && isString(newNode)) {
 		// 文本节点
 		if (oldNode !== newNode) {
+			console.debug('walk textNode: ', oldNode + '->' + newNode);
 			current.push({type: 'TEXT', text: newNode});
 		}
 	} else if (oldNode.type === newNode.type) {
 		// 比较节点属性是否更改
 		let attr = diffAttr(oldNode.props, newNode.props);
 		if (Object.keys(attr).length > 0) {
+			console.debug('walk !attr: ', attr);
 			current.push({type: 'ATTR', attr});
 		}
-		// 遍历子节点
+		// 先序深度优先遍历子节点
 		diffChildren(oldNode.children, newNode.children, patches);
 	} else {
 		// 节点替换
 		current.push({type: 'REPLACE', newNode});
+		console.debug('walk replace: ', newNode);
 	}
 
 	if (current.length) {
 		patches[index] = current;
+	}
+	if (index == 6) {
+		console.debug('index=6: ', oldNode, newNode)
 	}
 }
 
@@ -66,6 +75,7 @@ function diffAttr(oldAttrs, newAttrs) {
 let num = 0;
 
 function diffChildren (oldChildren, newChildren, patches) {
+	console.debug('diffChildren: ', oldChildren + '-->' + newChildren);
 	oldChildren.forEach((child, index) => {
 		walk(child, newChildren[index], ++num, patches);
 	}) 

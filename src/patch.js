@@ -11,28 +11,35 @@ function patch(node, patches) {
 	tranverse(node);
 }
 
+// 后续深度优先遍历
 function tranverse(node) {
 	let current = allPatches[index++];
 	let childNodes = node.childNodes;
+	console.debug('tranverse: ', JSON.stringify(current) + ' ' + (index-1) + ' nodeType: ' + node.nodeType + ' nodeName: ' + node.nodeName + ' TextContent: ' + node.textContent)
+	
+	if (current) {
+		console.debug('current: ', current)
+		doPatch(node, current);
+	}
+
+	if (current && current[0].type == 'REPLACE') {
+		childNodes = [];
+	}
 
 	childNodes.forEach(child => {
 		tranverse(child);
 	})
 
-	if (current) {
-		doPatch(node, current);
-	}
+
+	// if (index == 7) {
+	// 	console.debug('patch.js index=6: ', node, current)
+	// }
 }
 
 function doPatch(node, patches) {
+	console.debug('doPatch: ', node, patches)
 	patches.forEach(patch => {
 		switch (patch.type) {
-			case 'REMOVE':
-				node.parentNode.removeChild(node);
-				break;
-			case 'TEXT':
-				node.textContent = patch.text;
-				break;
 			case 'ATTR':
 				for (let key in patch.attr) {
 					let value = patch.attr[key];
@@ -43,10 +50,19 @@ function doPatch(node, patches) {
 					}
 				}
 				break;		
+			case 'TEXT':
+				node.textContent = patch.text;
+				break;
 			case 'REPLACE':
 				let newNode = patch.newNode;
 				newNode = (newNode instanceof Element ? render(newNode) : document.createTextNode(newNode));
 				node.parentNode.replaceChild(newNode, node);
+				console.debug('replace: ', JSON.stringify(patch))
+				break;
+			case 'REMOVE':
+				console.debug('remove: ', JSON.stringify(patch))
+				console.debug('remove node: ', node)
+				node.parentNode.removeChild(node);
 				break;
 		}
 	})
