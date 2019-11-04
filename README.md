@@ -7,6 +7,7 @@ https://juejin.im/post/5c8e5e4951882545c109ae9c
 
 实测后发现该实现仍然存在一些细节处理和性能的问题，但是对于理解virtual DOM生成及diff算法的基础还是有一定帮助的
 
+```
 let virtualDom = createElement('ul', {class: "list"}, [
 	createElement('li', {class: 'item'}, ['周杰伦']),
 	createElement('li', {class: 'item'}, ['周传雄']),
@@ -20,6 +21,7 @@ let virtualDom2 = createElement('ul', {class: "list"}, [
 	createElement('ul', {class: 'newNode'}, [
 	createElement('li', {class: 'sub'}, ['周星星'])
 ])
+```
 
 此时patch算法出现了问题~
 
